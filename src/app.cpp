@@ -1,8 +1,8 @@
-#include "gl_error_handling.h"
-#include "vertex_buffer.h"
-#include "index_buffer.h"
-#include "vertex_array.h"
-#include "shader.h"
+#include "GLErrorHandling.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
 
 #include <iostream>
 
@@ -59,7 +59,7 @@ int main(void)
 
 
     // shaders
-    Shader* shader = new Shader("res/shaders/vertex_shaders/basic_vertex_shader.shader", "res/shaders/fragment_shaders/basic_fragment_shader.shader");
+    Shader* shader = new Shader("res/shaders/vertex_shaders/BasicVertexShader.shader", "res/shaders/fragment_shaders/BasicFragmentShader.shader");
     shader->bind();
 
     // uniforms (set once per draw)

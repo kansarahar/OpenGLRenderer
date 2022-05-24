@@ -1,5 +1,5 @@
-#include "vertex_array.h"
-#include "gl_error_handling.h"
+#include "VertexArray.h"
+#include "GLErrorHandling.h"
 
 #include <iostream>
 

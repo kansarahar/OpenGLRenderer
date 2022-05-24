@@ -1,4 +1,4 @@
-#include "gl_error_handling.h"
+#include "GLErrorHandling.h"
 
 #include <iostream>
 

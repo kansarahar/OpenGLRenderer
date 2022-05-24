@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vertex_buffer.h"
-#include "index_buffer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 #include <vector>
 

@@ -1,5 +1,5 @@
-#include "shader.h"
-#include "gl_error_handling.h"
+#include "Shader.h"
+#include "GLErrorHandling.h"
 
 #include <fstream>
 #include <sstream>
