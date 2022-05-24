@@ -1,3 +1,5 @@
+#include "window.h"
+
 #include <iostream>
 
 #include <GL/glew.h>
@@ -14,6 +16,13 @@ int main(void)
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window) {
+        glfwTerminate();
+        return -1;
+    }
+
+    GLFWwindow* window2;
+    window2 = glfwCreateWindow(640, 640, "Hello World2", NULL, NULL);
+    if (!window2) {
         glfwTerminate();
         return -1;
     }
