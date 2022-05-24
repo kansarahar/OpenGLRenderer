@@ -160,9 +160,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="res\shaders\fragment_shaders\basic_fragment_shader.shader" />
+    <None Include="res\shaders\vertex_shaders\basic_vertex_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\app.cpp" />
+    <ClCompile Include="src\gl_error_handling.cpp" />
+    <ClCompile Include="src\index_buffer.cpp" />
+    <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\vertex_array.cpp" />
+    <ClCompile Include="src\vertex_buffer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\gl_error_handling.h" />
+    <ClInclude Include="src\index_buffer.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\vertex_array.h" />
+    <ClInclude Include="src\vertex_buffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

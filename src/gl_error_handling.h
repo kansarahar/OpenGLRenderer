@@ -7,3 +7,5 @@
 
 void clearError();
 bool checkError(const char* function, const char* file, int line);
+
+unsigned checkShaderCompilationError(GLenum type, unsigned shader_id);
