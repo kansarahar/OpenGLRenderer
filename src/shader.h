@@ -28,6 +28,5 @@ private:
 	int getUniformLocation(const std::string& name);
 
 	unsigned m_shader_program_id;
-	std::string m_vs_filepath, m_fs_filepath;
 	std::unordered_map<std::string, int> m_uniform_location_cache;
 };

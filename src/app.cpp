@@ -52,10 +52,10 @@ int main(void)
 
     VertexArray* va = new VertexArray();
     VertexBuffer* vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
-    VertexBufferLayout* layout = new VertexBufferLayout();
-    layout->push<float>(2);
-    va->addBuffer(vb, layout);
     IndexBuffer* ib = new IndexBuffer(indices, 6);
+
+    va->addAttrib(GL_FLOAT, 2, false);
+    va->bindBuffers(vb, ib);
 
 
     // shaders
@@ -84,7 +84,6 @@ int main(void)
 
         shader->bind();
         va->bind();
-        ib->bind();
         GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));      // draw from index buffer
 
 
@@ -98,7 +97,6 @@ int main(void)
 
     delete vb;
     delete ib;
-    delete layout;
     delete va;
     delete shader;
 

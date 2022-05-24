@@ -5,13 +5,13 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(const std::string& vertex_shader_filepath, const std::string& fragment_shader_filepath) {
+Shader::Shader(const std::string& vertex_shader_filepath, const std::string& fragment_shader_filepath)
+	: m_shader_program_id(0)
+{
 	m_shader_program_id = glCreateProgram();
-	m_vs_filepath = vertex_shader_filepath;
-	m_fs_filepath = fragment_shader_filepath;
 
-	std::string vertex_shader_source = parseShader(m_vs_filepath);
-	std::string fragment_shader_source = parseShader(m_fs_filepath);
+	std::string vertex_shader_source = parseShader(vertex_shader_filepath);
+	std::string fragment_shader_source = parseShader(fragment_shader_filepath);
 
 	unsigned vs_id = compileShader(GL_VERTEX_SHADER, vertex_shader_source);
 	unsigned fs_id = compileShader(GL_FRAGMENT_SHADER, fragment_shader_source);
