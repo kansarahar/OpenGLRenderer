@@ -4,7 +4,7 @@
 #include <iostream>
 
 VertexArray::VertexArray()
-	: m_vertex_array_id(0), m_stride(0)
+	: m_vertex_array_id(0), m_stride(0), m_vb(nullptr), m_ib(nullptr)
 {
 	GLCALL(glGenVertexArrays(1, &m_vertex_array_id));
 }
@@ -61,10 +61,12 @@ void VertexArray::addAttrib(const std::string& attrib_name, GLenum type, unsigne
 	m_stride += size * type_byte_size;
 }
 
-void VertexArray::bindBuffers(const VertexBuffer* vb, const IndexBuffer* ib) {
+void VertexArray::bindBuffers(VertexBuffer* vb, IndexBuffer* ib) {
 	bind();
 	vb->bind();
 	ib->bind();
+	m_vb = vb;
+	m_ib = ib;
 	unsigned offset = 0;
 	for (unsigned i = 0; i < m_attribs.size(); i++) {
 		const VertexAttrib& attrib = m_attribs[i];
@@ -72,4 +74,10 @@ void VertexArray::bindBuffers(const VertexBuffer* vb, const IndexBuffer* ib) {
 		GLCALL(glVertexAttribPointer(i, attrib.size, attrib.type, attrib.normalized ? GL_TRUE : GL_FALSE, m_stride, (const void*)offset));
 		offset += attrib.size * attrib.type_byte_size;
 	}
+}
+
+int VertexArray::getElementCount() const {
+	if (!m_ib)
+		return 0;
+	return m_ib->getCount();
 }

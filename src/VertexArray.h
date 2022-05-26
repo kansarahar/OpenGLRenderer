@@ -17,7 +17,8 @@ public:
 	void bind() const;
 	void unbind() const;
 	void addAttrib(const std::string& attrib_name, GLenum type, unsigned size, bool normalized = false);
-	void bindBuffers(const VertexBuffer* vb, const IndexBuffer* ib);
+	void bindBuffers(VertexBuffer* vb, IndexBuffer* ib);
+	int getElementCount() const;
 
 private:
 	struct VertexAttrib {
@@ -31,4 +32,6 @@ private:
 	unsigned m_vertex_array_id;
 	unsigned m_stride;
 	std::vector<VertexAttrib> m_attribs;
+	VertexBuffer* m_vb;
+	IndexBuffer* m_ib;
 };

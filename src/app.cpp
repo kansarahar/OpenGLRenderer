@@ -4,6 +4,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Renderer.h"
 
 #include <iostream>
 #include <algorithm>
@@ -11,18 +12,27 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <stb_image/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-float mix = 0.2;
+float y = 0.0f;
+float x = 0.0f;
 
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        mix = std::min(1.0f, mix + 0.01f);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        y += 0.01f;
     }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        mix = std::max(0.0f, mix - 0.01f);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        y -= 0.01f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        x += 0.01f;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        x -= 0.01f;
     }
 }
 
@@ -38,11 +48,11 @@ int main(void)
     if (!glfwInit())
         return -1;
 
-    int window_width = 640;
-    int window_height = 480;
+    int window_width = 1280;
+    int window_height = 960;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(window_width*2, window_height*2, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(window_width, window_height, "Hello World", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -60,8 +70,7 @@ int main(void)
     
     
     
-    /* --------------------------------- Buffer Setup --------------------------------- */
-
+    /* Buffer Setup */
 
     float vertices[] = {
         // position             // color                // texture
@@ -78,12 +87,13 @@ int main(void)
 
     VertexArray* va = new VertexArray();
     VertexBuffer* vb = new VertexBuffer(vertices, sizeof(vertices));
-    IndexBuffer* ib = new IndexBuffer(indices, sizeof(indices));
+    IndexBuffer* ib = new IndexBuffer(indices, sizeof(indices) / sizeof(unsigned));
 
     va->addAttrib("position", GL_FLOAT, 3, false);
     va->addAttrib("color", GL_FLOAT, 3, false);
     va->addAttrib("texture", GL_FLOAT, 2, true);
     va->bindBuffers(vb, ib);
+
 
     // textures
     Texture* wood_texture = new Texture("res/textures/wood.png");
@@ -95,34 +105,33 @@ int main(void)
     Shader* shader = new Shader("res/shaders/vertex_shaders/BasicVertexShader.shader", "res/shaders/fragment_shaders/BasicFragmentShader.shader");
     shader->bind();
 
-    // uniforms (set once per draw)
+
+    // uniforms (set once)
     shader->setUniform1i("u_texture0", 0);
     shader->setUniform1i("u_texture1", 1);
 
-    // unbinding buffers and shaders
-    shader->unbind();
-    va->unbind();
-    vb->unbind();
-    ib->unbind();
-    
-
-
+    Renderer* renderer = new Renderer();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
+
 
         /* Process input */
         processInput(window);
 
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer->clear(GL_COLOR_BUFFER_BIT);
 
-
+        /* Uniforms (set per draw) */
+        glm::mat4 transform_matrix(1.0);
+        transform_matrix = glm::translate(transform_matrix, glm::vec3(x, y, 0.0f));
+        //transform_matrix = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
         shader->bind();
-        shader->setUniform1f("u_mix", mix);
-        va->bind();
-        GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));      // draw from index buffer
+        shader->setUniformMatrix4f("u_transform", transform_matrix);
+
+        /* Draw */
+        renderer->draw(va, shader);
 
 
 
@@ -139,6 +148,7 @@ int main(void)
     delete shader;
     delete wood_texture;
     delete mario_texture;
+    delete renderer;
     glfwTerminate();
     return 0;
 }
