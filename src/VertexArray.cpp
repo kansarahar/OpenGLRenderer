@@ -21,7 +21,7 @@ void VertexArray::unbind() const {
 	GLCALL(glBindVertexArray(0));
 }
 
-void VertexArray::addAttrib(GLenum type, unsigned size, bool normalized) {
+void VertexArray::addAttrib(const std::string& attrib_name, GLenum type, unsigned size, bool normalized) {
 	unsigned type_byte_size = 0;
 	switch (type) {
 	case GL_FLOAT:

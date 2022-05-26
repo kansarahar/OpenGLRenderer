@@ -4,28 +4,31 @@
 #include "IndexBuffer.h"
 
 #include <vector>
+#include <string>
 
 #include <GL/glew.h>
 
 
-struct VertexAttrib {
-	GLenum type;
-	unsigned size;
-	unsigned type_byte_size;
-	bool normalized;
-};
-
 class VertexArray {
-private:
-	unsigned m_vertex_array_id;
-	unsigned m_stride;
-	std::vector<VertexAttrib> m_attribs;
 public:
 	VertexArray();
 	~VertexArray();
 
 	void bind() const;
 	void unbind() const;
-	void addAttrib(GLenum type, unsigned size, bool normalized = false);
+	void addAttrib(const std::string& attrib_name, GLenum type, unsigned size, bool normalized = false);
 	void bindBuffers(const VertexBuffer* vb, const IndexBuffer* ib);
+
+private:
+	struct VertexAttrib {
+		GLenum type;
+		unsigned size;
+		unsigned type_byte_size;
+		bool normalized;
+		std::string attrib_name;
+	};
+
+	unsigned m_vertex_array_id;
+	unsigned m_stride;
+	std::vector<VertexAttrib> m_attribs;
 };
