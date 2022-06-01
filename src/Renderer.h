@@ -7,6 +7,6 @@ class Renderer {
 public:
 	Renderer();
 
-	void clear(unsigned buffer_bits) const;
+	void clear() const;
 	void draw(const VertexArray* va, const Shader* shader) const;
 };
