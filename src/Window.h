@@ -11,7 +11,7 @@
 /* Singleton window class */
 class Window {
 public:
-	Window(int width, int height, std::string name, Camera* cam, Window* window_to_share_context=NULL);
+	Window(int width, int height, std::string name, Camera* cam);
 	Window(Window& window) = delete;
 	~Window();
 	
@@ -20,7 +20,7 @@ public:
 	
 	inline void swapBuffers() { glfwSwapBuffers(m_window); }
 	inline void pollEvents() { glfwPollEvents(); }
-	inline bool isClosed() { return window_destroyed || glfwWindowShouldClose(m_window); }
+	inline bool isClosed() { return !created_window || glfwWindowShouldClose(m_window); }
 	
 private:
 	/* Static functions and members */
@@ -28,14 +28,13 @@ private:
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void windowCloseCallback(GLFWwindow* window);
-	static void setCallbackFunctions(GLFWwindow* window);
-	static std::unordered_map<GLFWwindow*, Window*> m_all_windows;
+	static void setCallbackFunctions(GLFWwindow* window, bool unset=false);
+	static Window* created_window;
 
 	/* Values useful for callback calculations */
 	float delta_time, time_curr_frame, time_prev_frame;
 	bool first_mouse;
 	double prev_mouse_x, prev_mouse_y;
-	bool window_destroyed;
 
 	/* Non-static members */
 	GLFWwindow* m_window;

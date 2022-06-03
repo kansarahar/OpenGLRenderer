@@ -1,58 +1,45 @@
 #include "Window.h"
 
 #include <iostream>
+#include <assert.h>
 
-Window::Window(int width, int height, std::string name, Camera* cam, Window* window_to_share_context) :
+Window::Window(int width, int height, std::string name, Camera* cam) :
 	m_width(width), m_height(height), m_name(name), m_cam(cam), m_window(nullptr),
 	delta_time(0.0f), time_curr_frame(0.0f), time_prev_frame(0.0f),
-	first_mouse(true), prev_mouse_x(0.0), prev_mouse_y(0.0),
-	window_destroyed(false)
+	first_mouse(true), prev_mouse_x(0.0), prev_mouse_y(0.0)
 {
 
 	/* This is the first window created */
-	if (m_all_windows.empty()) {
-		if (!glfwInit()) {
+	assert(!created_window);
 
-			/* GLFW failed to initialize */
-			std::cout << "Failed to initialize GLFW" << std::endl;
-			std::cout << "Could not create window" << std::endl;
-			glfwTerminate();
+	if (!glfwInit()) {
 
-		}
-		else {
-
-			/* GLFW initialized successfully */
-			m_window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
-			m_all_windows[m_window] = this;
-
-			glfwMakeContextCurrent(m_window);
-
-			/* Initialize GLEW */
-			if (glewInit() != GLEW_OK) {
-				std::cout << "Error in glewInit" << std::endl;
-			}
-			std::cout << glGetString(GL_VERSION) << std::endl;
-
-			setCallbackFunctions(m_window);
-		}
+		/* GLFW failed to initialize */
+		std::cout << "Failed to initialize GLFW" << std::endl;
+		std::cout << "Could not create window" << std::endl;
+		glfwTerminate();
 	}
 	else {
-		m_window = glfwCreateWindow(width, height, name.c_str(), NULL, window_to_share_context ? window_to_share_context->m_window : NULL);
-		if (!m_window)
-			std::cout << "Could not create window" << std::endl;
-		else {
-			m_all_windows[m_window] = this;
-			setCallbackFunctions(m_window);
+
+		/* GLFW initialized successfully */
+		m_window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+		created_window = this;
+
+		glfwMakeContextCurrent(m_window);
+
+		/* Initialize GLEW */
+		if (glewInit() != GLEW_OK) {
+			std::cout << "Error in glewInit" << std::endl;
 		}
+		std::cout << glGetString(GL_VERSION) << std::endl;
+
+		setCallbackFunctions(m_window);
 	}
 }
 
 Window::~Window() {
 	windowCloseCallback(m_window);
-	if (m_all_windows.empty()) {
-		glfwTerminate();
-		std::cout << "terminated" << std::endl;
-	}
+	glfwTerminate();
 }
 
 void Window::bind() {
@@ -83,49 +70,39 @@ void Window::processInput() {
 }
 
 void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-	Window* curr_window = m_all_windows[window];
-	if (curr_window->first_mouse) {
-		curr_window->prev_mouse_x = xpos;
-		curr_window->prev_mouse_y = ypos;
-		curr_window->first_mouse = false;
+	if (created_window->first_mouse) {
+		created_window->prev_mouse_x = xpos;
+		created_window->prev_mouse_y = ypos;
+		created_window->first_mouse = false;
 	}
-	float xoffset = xpos - curr_window->prev_mouse_x;
-	float yoffset = curr_window->prev_mouse_y - ypos;
+	float xoffset = xpos - created_window->prev_mouse_x;
+	float yoffset = created_window->prev_mouse_y - ypos;
 
-	curr_window->prev_mouse_x = xpos;
-	curr_window->prev_mouse_y = ypos;
-	curr_window->m_cam->rotate(xoffset, yoffset);
+	created_window->prev_mouse_x = xpos;
+	created_window->prev_mouse_y = ypos;
+	created_window->m_cam->rotate(xoffset, yoffset);
 }
 
 void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-	Window* curr_window = m_all_windows[window];
-	curr_window->m_cam->changeFov(-yoffset);
+	created_window->m_cam->changeFov(-yoffset);
 }
 
 void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-	Window* curr_window = m_all_windows[window];
-	glfwGetWindowSize(window, &(curr_window->m_width), &(curr_window->m_height));
+	glfwGetWindowSize(window, &(created_window->m_width), &(created_window->m_height));
 }
 
 void Window::windowCloseCallback(GLFWwindow* window) {
-	/* Remove window from list of existing windows */
-	auto window_it = m_all_windows.find(window);
-	if (window_it != m_all_windows.end()) {
-		m_all_windows[window]->window_destroyed = true;
-		m_all_windows.erase(window_it);
-		glfwDestroyWindow(window);
-	}
+	setCallbackFunctions(window, true);
+	created_window = nullptr;
 }
 
-void Window::setCallbackFunctions(GLFWwindow* window) {
+void Window::setCallbackFunctions(GLFWwindow* window, bool unset) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	glfwSetCursorPosCallback(window, mouseCallback);
-	glfwSetScrollCallback(window, scrollCallback);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
-	glfwSetWindowCloseCallback(window, windowCloseCallback);
+	glfwSetCursorPosCallback(window, unset ? NULL : mouseCallback);
+	glfwSetScrollCallback(window, unset ? NULL : scrollCallback);
+	glfwSetFramebufferSizeCallback(window, unset ? NULL : framebufferSizeCallback);
+	glfwSetWindowCloseCallback(window, unset ? NULL : windowCloseCallback);
 }
 
-std::unordered_map<GLFWwindow*, Window*> Window::m_all_windows;
+Window* Window::created_window = nullptr;

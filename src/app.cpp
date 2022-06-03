@@ -21,11 +21,7 @@ Camera cam;
 int main(void)
 {
     Camera* cam = new Camera();
-    Camera* cam2 = new Camera();
-    Window* window = new Window(1280, 960, "Hello World", cam);
-    Window* window2 = new Window(1280, 960, "Hello World2", cam2);
-    window->bind();
-    
+    Window* window = new Window(1280, 960, "OpenGL Renderer", cam);
     
     /* Buffer Setup */
 
@@ -156,8 +152,6 @@ int main(void)
         /* Draw */
         renderer->draw(va, shader);
 
-
-
         /* Swap front and back buffers */
         window->swapBuffers();
 
@@ -172,7 +166,6 @@ int main(void)
     delete wood_texture;
     delete mario_texture;
     delete renderer;
-    delete window;
-    delete window2;
+    delete window; // delete window AFTER buffers have been deleted
     return 0;
 }
