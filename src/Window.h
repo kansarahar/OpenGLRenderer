@@ -3,14 +3,15 @@
 #include "Camera.h"
 
 #include <string>
-#include <vector>
+#include <unordered_map>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 /* Singleton window class */
 class Window {
 public:
-	Window(unsigned width, unsigned height, std::string name, Camera* cam, Window* window_to_share_context=NULL);
+	Window(int width, int height, std::string name, Camera* cam, Window* window_to_share_context=NULL);
 	Window(Window& window) = delete;
 	~Window();
 	
@@ -19,17 +20,26 @@ public:
 	
 	inline void swapBuffers() { glfwSwapBuffers(m_window); }
 	inline void pollEvents() { glfwPollEvents(); }
-	inline int windowShouldClose() { return glfwWindowShouldClose(m_window); }
+	inline bool isClosed() { return window_destroyed || glfwWindowShouldClose(m_window); }
 	
 private:
-	static void windowCloseCallback(GLFWwindow* window);
-	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+	/* Static functions and members */
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-	static std::vector<GLFWwindow*> m_all_window_ptrs;
+	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+	static void windowCloseCallback(GLFWwindow* window);
+	static void setCallbackFunctions(GLFWwindow* window);
+	static std::unordered_map<GLFWwindow*, Window*> m_all_windows;
 
+	/* Values useful for callback calculations */
+	float delta_time, time_curr_frame, time_prev_frame;
+	bool first_mouse;
+	double prev_mouse_x, prev_mouse_y;
+	bool window_destroyed;
+
+	/* Non-static members */
 	GLFWwindow* m_window;
 	Camera* m_cam;
 	std::string m_name;
-	unsigned m_width, m_height;
+	int m_width, m_height;
 };

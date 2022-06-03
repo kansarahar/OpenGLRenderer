@@ -6,12 +6,10 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "Window.h"
 
 #include <iostream>
 #include <algorithm>
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,92 +18,13 @@
 
 Camera cam;
 
-float delta_time = 0.0f, time_prev_frame = 0.0f, time_curr_frame = 0.0f;
-void processInput(GLFWwindow* window) {
-    // set up timing so that movement is at the same speed on any device
-    time_curr_frame = (float)glfwGetTime();
-    delta_time = time_curr_frame - time_prev_frame;
-    time_prev_frame = time_curr_frame;
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cam.moveForward(delta_time);
-    }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cam.moveBackward(delta_time);
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cam.moveLeft(delta_time);
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cam.moveRight(delta_time);
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        cam.moveUp(delta_time);
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS) {
-        cam.moveDown(delta_time);
-    }
-}
-
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-bool firstMouse = true;
-float last_mouse_x = 400, last_mouse_y = 300;
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    if (firstMouse) {
-        last_mouse_x = xpos;
-        last_mouse_y = ypos;
-        firstMouse = false;
-    }
-    float xoffset = xpos - last_mouse_x;
-    float yoffset = last_mouse_y - ypos;
-    last_mouse_x = xpos;
-    last_mouse_y = ypos;
-    cam.rotate(xoffset, yoffset);
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    cam.changeFov(-yoffset);
-}
-
 int main(void)
 {
-    GLFWwindow* window;
-
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-
-    int window_width = 1280;
-    int window_height = 960;
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(window_width, window_height, "Hello World", NULL, NULL);
-    if (!window) {
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    /* Window inputs */
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouseCallback);
-    glfwSetScrollCallback(window, scrollCallback);
-
-
-    if (glewInit() != GLEW_OK)
-        std::cout << "Error in glewInit" << std::endl;
-
-    std::cout << glGetString(GL_VERSION) << std::endl;
-
-    
+    Camera* cam = new Camera();
+    Camera* cam2 = new Camera();
+    Window* window = new Window(1280, 960, "Hello World", cam);
+    Window* window2 = new Window(1280, 960, "Hello World2", cam2);
+    window->bind();
     
     
     /* Buffer Setup */
@@ -214,11 +133,10 @@ int main(void)
     Renderer* renderer = new Renderer();
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window)) {
-
+    while (!window->isClosed()) {
 
         /* Process input */
-        processInput(window);
+        window->processInput();
 
         /* Render here */
         renderer->clear();
@@ -226,8 +144,8 @@ int main(void)
         /* Uniforms (set per draw) */
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));            // model -> world
         //model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 view = cam.getViewMatrix();                                                       // world -> camera view
-        glm::mat4 projection = cam.getProjMatrix();                                                 // camera -> clip
+        glm::mat4 view = cam->getViewMatrix();                                                       // world -> camera view
+        glm::mat4 projection = cam->getProjMatrix();                                                 // camera -> clip
         // glm::mat4 model = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         // glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 1.0f) * transform_matrix;
         glm::mat4 transform_matrix = projection * view * model;
@@ -241,10 +159,10 @@ int main(void)
 
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        window->swapBuffers();
 
         /* Poll for and process events */
-        glfwPollEvents();
+        window->pollEvents();
     }
 
     delete vb;
@@ -254,6 +172,7 @@ int main(void)
     delete wood_texture;
     delete mario_texture;
     delete renderer;
-    glfwTerminate();
+    delete window;
+    delete window2;
     return 0;
 }
