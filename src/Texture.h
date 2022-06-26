@@ -5,6 +5,8 @@
 class Texture {
 public:
 	Texture(const std::string& path);
+	Texture(const Texture& other) = delete;
+	Texture& operator=(Texture& other) = delete;
 	~Texture();
 
 	void bind(unsigned slot = 0) const;

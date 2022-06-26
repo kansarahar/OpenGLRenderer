@@ -11,6 +11,8 @@
 class Shader {
 public:
 	Shader(const std::string& vertex_shader_filepath, const std::string& fragment_shader_filepath);
+	Shader(const Shader& other) = delete;
+	Shader& operator=(const Shader& other) = delete;
 	~Shader();
 
 	void bind() const;

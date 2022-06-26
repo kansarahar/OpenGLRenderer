@@ -12,7 +12,8 @@
 class Window {
 public:
 	Window(int width, int height, std::string name, Camera* cam);
-	Window(Window& window) = delete;
+	Window(const Window& other) = delete;
+	Window& operator=(const Window& other) = delete;
 	~Window();
 	
 	void bind();

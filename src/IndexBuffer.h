@@ -6,6 +6,8 @@ private:
 	unsigned m_count;
 public:
 	IndexBuffer(const unsigned* data, unsigned count);
+	IndexBuffer(const IndexBuffer& other);
+	IndexBuffer& operator=(const IndexBuffer& other);
 	~IndexBuffer();
 
 	void bind() const;

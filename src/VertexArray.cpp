@@ -1,12 +1,36 @@
 #include "VertexArray.h"
 #include "GLErrorHandling.h"
 
+#include <algorithm>
 #include <iostream>
 
 VertexArray::VertexArray()
 	: m_vertex_array_id(0), m_stride(0), m_vb(nullptr), m_ib(nullptr)
 {
 	GLCALL(glGenVertexArrays(1, &m_vertex_array_id));
+}
+
+VertexArray::VertexArray(VertexArray& other) {
+	*this = other;
+}
+
+VertexArray& VertexArray::operator=(VertexArray& other) {
+
+	// copy
+	unsigned new_vertex_array_id;
+	GLCALL(glGenVertexArrays(1, &new_vertex_array_id));
+
+	// swap and delete
+	std::swap(m_vertex_array_id, new_vertex_array_id);
+	m_stride = other.m_stride;
+	m_attribs = other.m_attribs;
+	m_vb = other.m_vb;
+	m_ib = other.m_ib;
+
+	GLCALL(glBindVertexArray(m_vertex_array_id));
+	GLCALL(glDeleteVertexArrays(1, &new_vertex_array_id));
+
+	return *this;
 }
 
 VertexArray::~VertexArray() {
@@ -56,6 +80,7 @@ void VertexArray::addAttrib(const std::string& attrib_name, GLenum type, unsigne
 		break;
 	default:
 		std::cout << "Error in VertexArray::addAttrib: Not a valid GLenum type - using GL_FLOAT as default" << std::endl;
+		type_byte_size = sizeof(GLfloat);
 	}
 	m_attribs.push_back({ type, size, type_byte_size, normalized });
 	m_stride += size * type_byte_size;

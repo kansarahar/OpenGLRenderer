@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "GLErrorHandling.h"
+#include "Mesh.h"
 
 #include <GL/glew.h>
 
@@ -13,8 +14,8 @@ void Renderer::clear() const {
 	GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
-void Renderer::draw(const VertexArray* va, const Shader* shader) const {
+void Renderer::draw(const Mesh* mesh, const Shader* shader) const {
 	shader->bind();
-	va->bind();
-	GLCALL(glDrawElements(GL_TRIANGLES, va->getElementCount(), GL_UNSIGNED_INT, nullptr));
+	mesh->bind();
+	GLCALL(glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, nullptr));
 }
