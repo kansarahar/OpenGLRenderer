@@ -10,29 +10,6 @@ VertexArray::VertexArray()
 	GLCALL(glGenVertexArrays(1, &m_vertex_array_id));
 }
 
-VertexArray::VertexArray(VertexArray& other) {
-	*this = other;
-}
-
-VertexArray& VertexArray::operator=(VertexArray& other) {
-
-	// copy
-	unsigned new_vertex_array_id;
-	GLCALL(glGenVertexArrays(1, &new_vertex_array_id));
-
-	// swap and delete
-	std::swap(m_vertex_array_id, new_vertex_array_id);
-	m_stride = other.m_stride;
-	m_attribs = other.m_attribs;
-	m_vb = other.m_vb;
-	m_ib = other.m_ib;
-
-	GLCALL(glBindVertexArray(m_vertex_array_id));
-	GLCALL(glDeleteVertexArrays(1, &new_vertex_array_id));
-
-	return *this;
-}
-
 VertexArray::~VertexArray() {
 	GLCALL(glDeleteVertexArrays(1, &m_vertex_array_id));
 }

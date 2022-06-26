@@ -3,8 +3,6 @@
 class VertexBuffer {
 public:
 	VertexBuffer(const void* data, unsigned size);
-	VertexBuffer(const VertexBuffer& other);
-	VertexBuffer& operator=(const VertexBuffer& other);
 	~VertexBuffer();
 
 

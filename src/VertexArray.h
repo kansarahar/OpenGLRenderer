@@ -12,8 +12,6 @@
 class VertexArray {
 public:
 	VertexArray();
-	VertexArray(VertexArray& other);
-	VertexArray& operator=(VertexArray& other);
 	~VertexArray();
 
 	void bind() const;
