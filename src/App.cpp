@@ -144,10 +144,11 @@ int main(void)
         glm::mat4 projection = cam->getProjMatrix();                                                 // camera -> clip
         // glm::mat4 model = glm::rotate(transform_matrix, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         // glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.1f, 1.0f) * transform_matrix;
-        glm::mat4 transform_matrix = projection * view * model;
 
         shader->bind();
-        shader->setUniformMatrix4f("u_transform", transform_matrix);
+        shader->setUniformMatrix4f("u_proj", projection);
+        shader->setUniformMatrix4f("u_view", view);
+        shader->setUniformMatrix4f("u_model", model);
 
         /* Draw */
         renderer->draw(va, shader);
