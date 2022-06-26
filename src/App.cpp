@@ -204,6 +204,13 @@ int main(void)
         22, 23, 20,
     };
 
+    // textures
+    Texture* wood_texture = new Texture("res/textures/wood.png");
+    Texture* mario_texture = new Texture("res/textures/mario.png");
+    std::vector<Texture*> textures;
+    textures.push_back(wood_texture);
+    textures.push_back(mario_texture);
+
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
     for (int v = 0; v < cube_positions.size(); v++)
@@ -211,14 +218,7 @@ int main(void)
     for (int i = 0; i < cube_indices.size(); i++)
         indices.push_back(cube_indices[i]);
 
-    Mesh* cube_mesh = new Mesh(vertices, indices);
-
-
-    // textures
-    Texture* wood_texture = new Texture("res/textures/wood.png");
-    Texture* mario_texture = new Texture("res/textures/mario.png");
-    wood_texture->bind(0);
-    mario_texture->bind(1);
+    Mesh* cube_mesh = new Mesh(vertices, indices, textures);
 
     // shaders
     Shader* shader = new Shader("res/shaders/vertex_shaders/BasicVertexShader.shader", "res/shaders/fragment_shaders/BasicFragmentShader.shader");

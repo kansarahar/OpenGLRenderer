@@ -17,5 +17,5 @@ void Renderer::clear() const {
 void Renderer::draw(const Mesh* mesh, const Shader* shader) const {
 	shader->bind();
 	mesh->bind();
-	GLCALL(glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, nullptr));
+	GLCALL(glDrawElements(GL_TRIANGLES, mesh->getNumIndices(), GL_UNSIGNED_INT, nullptr));
 }

@@ -4,6 +4,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Texture.h"
 
 #include <vector>
 
@@ -18,15 +19,25 @@ struct Vertex {
 
 class Mesh {
 public:
-	std::vector<Vertex> vertices;
-	std::vector<unsigned> indices;
-
-	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices);
+	Mesh(
+		const std::vector<Vertex>& vertices,
+		const std::vector<unsigned>& indices,
+		const std::vector<Texture*>& textures
+	);
 	~Mesh();
+
 	void bind() const;
 
+	inline unsigned getNumVertices() const { return m_vertices.size();}
+	inline unsigned getNumIndices() const { return m_indices.size(); }
+	inline unsigned getNumTextures() const { return m_textures.size(); }
+
 private:
-	VertexBuffer* vb;
-	IndexBuffer* ib;
-	VertexArray* va;
+	std::vector<Vertex> m_vertices;
+	std::vector<unsigned> m_indices;
+	std::vector<Texture*> m_textures;
+
+	VertexBuffer* m_vb;
+	IndexBuffer* m_ib;
+	VertexArray* m_va;
 };
