@@ -161,7 +161,11 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="res\shaders\fragment_shaders\BasicFragmentShader.shader" />
+    <None Include="res\shaders\fragment_shaders\LightCasterFragmentShader.shader" />
+    <None Include="res\shaders\fragment_shaders\FragmentShaderWithLighting.shader" />
+    <None Include="res\shaders\vertex_shaders\VertexShaderWithLighting.shader" />
     <None Include="res\shaders\vertex_shaders\BasicVertexShader.shader" />
+    <None Include="res\shaders\vertex_shaders\LightCasterVertexShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />

@@ -219,15 +219,16 @@ int main(void)
         indices.push_back(cube_indices[i]);
 
     Mesh* cube_mesh = new Mesh(vertices, indices, textures);
+    Mesh* light_mesh = new Mesh(vertices, indices, textures);
 
     // shaders
-    Shader* shader = new Shader("res/shaders/vertex_shaders/BasicVertexShader.shader", "res/shaders/fragment_shaders/BasicFragmentShader.shader");
+    Shader* shader = new Shader("res/shaders/vertex_shaders/VertexShaderWithLighting.shader", "res/shaders/fragment_shaders/FragmentShaderWithLighting.shader");
+    Shader* light_caster_shader = new Shader("res/shaders/vertex_shaders/LightCasterVertexShader.shader", "res/shaders/fragment_shaders/LightCasterFragmentShader.shader");
+
     shader->bind();
-
-
-    // uniforms (set once)
     shader->setUniform1i("u_texture0", 0);
     shader->setUniform1i("u_texture1", 1);
+
 
     Renderer* renderer = new Renderer();
 
@@ -242,6 +243,7 @@ int main(void)
 
         /* Uniforms (set per draw) */
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));            // model -> world
+        glm::mat4 light_caster_model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
         //model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         glm::mat4 view = cam->getViewMatrix();                                                       // world -> camera view
         glm::mat4 projection = cam->getProjMatrix();                                                 // camera -> clip
@@ -252,9 +254,18 @@ int main(void)
         shader->setUniformMatrix4f("u_proj", projection);
         shader->setUniformMatrix4f("u_view", view);
         shader->setUniformMatrix4f("u_model", model);
+        shader->setUniform3f("u_light_color", 1.0f, 1.0f, 1.0f);
+        shader->setUniform1f("u_ambient_strength", 0.1f);
+
+        light_caster_shader->bind();
+        light_caster_shader->setUniformMatrix4f("u_proj", projection);
+        light_caster_shader->setUniformMatrix4f("u_view", view);
+        light_caster_shader->setUniformMatrix4f("u_model", light_caster_model);
+        light_caster_shader->setUniform3f("u_light_color", 1.0f, 1.0f, 1.0f);
 
         /* Draw */
         renderer->draw(cube_mesh, shader);
+        renderer->draw(light_mesh, light_caster_shader);
 
         /* Swap front and back buffers */
         window->swapBuffers();

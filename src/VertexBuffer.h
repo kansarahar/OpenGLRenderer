@@ -5,7 +5,6 @@ public:
 	VertexBuffer(const void* data, unsigned size);
 	~VertexBuffer();
 
-
 	void bind() const;
 	void unbind() const;
 
