@@ -1,5 +1,6 @@
 #include "GLErrorHandling.h"
 #include "Mesh.h"
+#include "Geometry.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Renderer.h"
@@ -30,159 +31,49 @@ int main(void)
          0.5f,  0.5f, 0.0f,     0.0f, 0.0f, -1.0f,      0.0f, 0.0f, 1.0f,       1.0f, 1.0f,
         -0.5f,  0.5f, 0.0f,     0.0f, 0.0f, -1.0f,      1.0f, 0.0f, 0.0f,       0.0f, 1.0f,
     };
-
     unsigned plane_indices[] = {
         0, 1, 2,
         2, 3, 0,
     };
 
-    std::vector<glm::vec3> cube_positions = {
+    std::vector<Vertex> cube_vertices = {
+          // position                        // normal                            // color                           // texture
+
         // front face
-        glm::vec3(-0.5f, -0.5f,  0.5f), // 0
-        glm::vec3( 0.5f, -0.5f,  0.5f), // 1
-        glm::vec3( 0.5f,  0.5f,  0.5f), // 2
-        glm::vec3(-0.5f,  0.5f,  0.5f), // 3
+        { glm::vec3(-0.5f, -0.5f,  0.5f),    glm::vec3( 0.0f,  0.0f,  1.0f),      glm::vec3(1.0f, 0.0f, 0.0f),       glm::vec2(0.0f, 0.0f) }, // 0
+        { glm::vec3( 0.5f, -0.5f,  0.5f),    glm::vec3( 0.0f,  0.0f,  1.0f),      glm::vec3(1.0f, 0.0f, 0.0f),       glm::vec2(1.0f, 0.0f) }, // 1
+        { glm::vec3( 0.5f,  0.5f,  0.5f),    glm::vec3( 0.0f,  0.0f,  1.0f),      glm::vec3(1.0f, 0.0f, 0.0f),       glm::vec2(1.0f, 1.0f) }, // 2
+        { glm::vec3(-0.5f,  0.5f,  0.5f),    glm::vec3( 0.0f,  0.0f,  1.0f),      glm::vec3(1.0f, 0.0f, 0.0f),       glm::vec2(0.0f, 1.0f) }, // 3
 
         // right face
-        glm::vec3( 0.5f, -0.5f,  0.5f), // 4
-        glm::vec3( 0.5f, -0.5f, -0.5f), // 5
-        glm::vec3( 0.5f,  0.5f, -0.5f), // 6
-        glm::vec3( 0.5f,  0.5f,  0.5f), // 7
+        { glm::vec3( 0.5f, -0.5f,  0.5f),    glm::vec3( 1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 0.0f),       glm::vec2(0.0f, 0.0f) }, // 4
+        { glm::vec3( 0.5f, -0.5f, -0.5f),    glm::vec3( 1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 0.0f),       glm::vec2(1.0f, 0.0f) }, // 5
+        { glm::vec3( 0.5f,  0.5f, -0.5f),    glm::vec3( 1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 0.0f),       glm::vec2(1.0f, 1.0f) }, // 6
+        { glm::vec3( 0.5f,  0.5f,  0.5f),    glm::vec3( 1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 0.0f),       glm::vec2(0.0f, 1.0f) }, // 7
 
         // back face
-        glm::vec3( 0.5f, -0.5f, -0.5f), // 8
-        glm::vec3(-0.5f, -0.5f, -0.5f), // 9
-        glm::vec3(-0.5f,  0.5f, -0.5f), // 10
-        glm::vec3( 0.5f,  0.5f, -0.5f), // 11
+        { glm::vec3( 0.5f, -0.5f, -0.5f),    glm::vec3( 0.0f,  0.0f, -1.0f),      glm::vec3(1.0f, 1.0f, 0.0f),       glm::vec2(0.0f, 0.0f) }, // 8
+        { glm::vec3(-0.5f, -0.5f, -0.5f),    glm::vec3( 0.0f,  0.0f, -1.0f),      glm::vec3(1.0f, 1.0f, 0.0f),       glm::vec2(1.0f, 0.0f) }, // 9
+        { glm::vec3(-0.5f,  0.5f, -0.5f),    glm::vec3( 0.0f,  0.0f, -1.0f),      glm::vec3(1.0f, 1.0f, 0.0f),       glm::vec2(1.0f, 1.0f) }, // 10
+        { glm::vec3( 0.5f,  0.5f, -0.5f),    glm::vec3( 0.0f,  0.0f, -1.0f),      glm::vec3(1.0f, 1.0f, 0.0f),       glm::vec2(0.0f, 1.0f) }, // 11
 
         // left face
-        glm::vec3(-0.5f, -0.5f, -0.5f), // 12
-        glm::vec3(-0.5f, -0.5f,  0.5f), // 13
-        glm::vec3(-0.5f,  0.5f,  0.5f), // 14
-        glm::vec3(-0.5f,  0.5f, -0.5f), // 15
+        { glm::vec3(-0.5f, -0.5f, -0.5f),    glm::vec3(-1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),       glm::vec2(0.0f, 0.0f) }, // 12
+        { glm::vec3(-0.5f, -0.5f,  0.5f),    glm::vec3(-1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),       glm::vec2(1.0f, 0.0f) }, // 13
+        { glm::vec3(-0.5f,  0.5f,  0.5f),    glm::vec3(-1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),       glm::vec2(1.0f, 1.0f) }, // 14
+        { glm::vec3(-0.5f,  0.5f, -0.5f),    glm::vec3(-1.0f,  0.0f,  0.0f),      glm::vec3(0.0f, 0.0f, 1.0f),       glm::vec2(0.0f, 1.0f) }, // 15
 
         // top face
-        glm::vec3(-0.5f,  0.5f,  0.5f), // 16
-        glm::vec3( 0.5f,  0.5f,  0.5f), // 17
-        glm::vec3( 0.5f,  0.5f, -0.5f), // 18
-        glm::vec3(-0.5f,  0.5f, -0.5f), // 19
+        { glm::vec3(-0.5f,  0.5f,  0.5f),    glm::vec3( 0.0f,  1.0f,  0.0f),      glm::vec3(1.0f, 0.0f, 1.0f),       glm::vec2(0.0f, 0.0f) }, // 16
+        { glm::vec3( 0.5f,  0.5f,  0.5f),    glm::vec3( 0.0f,  1.0f,  0.0f),      glm::vec3(1.0f, 0.0f, 1.0f),       glm::vec2(1.0f, 0.0f) }, // 17
+        { glm::vec3( 0.5f,  0.5f, -0.5f),    glm::vec3( 0.0f,  1.0f,  0.0f),      glm::vec3(1.0f, 0.0f, 1.0f),       glm::vec2(1.0f, 1.0f) }, // 18
+        { glm::vec3(-0.5f,  0.5f, -0.5f),    glm::vec3( 0.0f,  1.0f,  0.0f),      glm::vec3(1.0f, 0.0f, 1.0f),       glm::vec2(0.0f, 1.0f) }, // 19
 
         // bottom face
-        glm::vec3(-0.5f, -0.5f, -0.5f), // 20
-        glm::vec3( 0.5f, -0.5f, -0.5f), // 21
-        glm::vec3( 0.5f, -0.5f,  0.5f), // 22
-        glm::vec3(-0.5f, -0.5f,  0.5f), // 23
-    };
-    std::vector<glm::vec3> cube_normals = {
-        // front face
-        glm::vec3( 0.0f,  0.0f,  1.0f),
-        glm::vec3( 0.0f,  0.0f,  1.0f),
-        glm::vec3( 0.0f,  0.0f,  1.0f),
-        glm::vec3( 0.0f,  0.0f,  1.0f),
-
-        // right face
-        glm::vec3( 1.0f,  0.0f,  0.0f),
-        glm::vec3( 1.0f,  0.0f,  0.0f),
-        glm::vec3( 1.0f,  0.0f,  0.0f),
-        glm::vec3( 1.0f,  0.0f,  0.0f),
-
-        // back face
-        glm::vec3( 0.0f,  0.0f, -1.0f),
-        glm::vec3( 0.0f,  0.0f, -1.0f),
-        glm::vec3( 0.0f,  0.0f, -1.0f),
-        glm::vec3( 0.0f,  0.0f, -1.0f),
-
-        // left face
-        glm::vec3(-1.0f,  0.0f,  0.0f),
-        glm::vec3(-1.0f,  0.0f,  0.0f),
-        glm::vec3(-1.0f,  0.0f,  0.0f),
-        glm::vec3(-1.0f,  0.0f,  0.0f),
-
-        // top face
-        glm::vec3( 0.0f,  1.0f,  0.0f),
-        glm::vec3( 0.0f,  1.0f,  0.0f),
-        glm::vec3( 0.0f,  1.0f,  0.0f),
-        glm::vec3( 0.0f,  1.0f,  0.0f),
-
-        // bottom face
-        glm::vec3( 0.0f, -1.0f,  0.0f),
-        glm::vec3( 0.0f, -1.0f,  0.0f),
-        glm::vec3( 0.0f, -1.0f,  0.0f),
-        glm::vec3( 0.0f, -1.0f,  0.0f),
-    };
-    std::vector<glm::vec3> cube_colors = {
-        // front face
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(1.0f, 0.0f, 0.0f),
-        glm::vec3(1.0f, 0.0f, 0.0f),
-
-        // right face
-        glm::vec3(0.0f, 1.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f),
-
-        // back face
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 0.0f),
-
-        // left face
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-
-        // top face
-        glm::vec3(1.0f, 0.0f, 1.0f),
-        glm::vec3(1.0f, 0.0f, 1.0f),
-        glm::vec3(1.0f, 0.0f, 1.0f),
-        glm::vec3(1.0f, 0.0f, 1.0f),
-
-        // bottom face
-        glm::vec3(0.0f, 1.0f, 1.0f),
-        glm::vec3(0.0f, 1.0f, 1.0f),
-        glm::vec3(0.0f, 1.0f, 1.0f),
-        glm::vec3(0.0f, 1.0f, 1.0f),
-    };
-    std::vector<glm::vec2> cube_textures = {
-        // front face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-
-        // right face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-
-        // bottom face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-
-        // left face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-
-        // top face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
-
-        // bottom face
-        glm::vec2(0.0f, 0.0f),
-        glm::vec2(1.0f, 0.0f),
-        glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.0f, 1.0f),
+        { glm::vec3(-0.5f, -0.5f, -0.5f),    glm::vec3( 0.0f, -1.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 1.0f),       glm::vec2(0.0f, 0.0f) }, // 20
+        { glm::vec3( 0.5f, -0.5f, -0.5f),    glm::vec3( 0.0f, -1.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 1.0f),       glm::vec2(1.0f, 0.0f) }, // 21
+        { glm::vec3( 0.5f, -0.5f,  0.5f),    glm::vec3( 0.0f, -1.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 1.0f),       glm::vec2(1.0f, 1.0f) }, // 22
+        { glm::vec3(-0.5f, -0.5f,  0.5f),    glm::vec3( 0.0f, -1.0f,  0.0f),      glm::vec3(0.0f, 1.0f, 1.0f),       glm::vec2(0.0f, 1.0f) }, // 23
     };
     std::vector<unsigned> cube_indices = {
         0, 1, 2,
@@ -204,6 +95,7 @@ int main(void)
         22, 23, 20,
     };
 
+
     // textures
     Texture* wood_texture = new Texture("res/textures/wood.png");
     Texture* mario_texture = new Texture("res/textures/mario.png");
@@ -211,15 +103,9 @@ int main(void)
     textures.push_back(wood_texture);
     textures.push_back(mario_texture);
 
-    std::vector<Vertex> vertices;
-    std::vector<unsigned> indices;
-    for (int v = 0; v < cube_positions.size(); v++)
-        vertices.push_back({ cube_positions[v], cube_normals[v], cube_colors[v], cube_textures[v] });
-    for (int i = 0; i < cube_indices.size(); i++)
-        indices.push_back(cube_indices[i]);
-
-    Mesh* cube_mesh = new Mesh(vertices, indices, textures);
-    Mesh* light_mesh = new Mesh(vertices, indices, textures);
+    Geometry cube_geometry(cube_vertices, cube_indices);
+    Mesh* cube_mesh = new Mesh(cube_geometry, textures);
+    Mesh* light_mesh = new Mesh(cube_geometry, textures);
 
     // shaders
     Shader* shader = new Shader("res/shaders/vertex_shaders/VertexShaderWithLighting.shader", "res/shaders/fragment_shaders/FragmentShaderWithLighting.shader");
